@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,6 +29,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
+
+    #[ORM\OneToMany(targetEntity: Investment::class, mappedBy: 'user')]
+    private Collection $investments;
+
+    public function __construct()
+    {
+        $this->investments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -94,5 +104,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->getEmail();
+    }
+
+    /**
+     * @return Collection<int, Investment>
+     */
+    public function getInvestments(): Collection
+    {
+        return $this->investments;
+    }
+
+    public function addInvestment(Investment $investment): static
+    {
+        if (!$this->investments->contains($investment)) {
+            $this->investments->add($investment);
+            $investment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvestment(Investment $investment): static
+    {
+        if ($this->investments->removeElement($investment)) {
+            // set the owning side to null (unless already changed)
+            if ($investment->getUser() === $this) {
+                $investment->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
