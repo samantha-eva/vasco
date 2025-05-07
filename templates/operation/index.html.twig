@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1 class="text-center my-5">Liste des opérations</h1>
+
+<div class="container">
+    <div class="row">
+        {% for operation in operations %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">{{ operation.nom }}</h5>
+                        <p class="card-text">
+                            <strong>Type :</strong> 
+                            {% if operation.type == 'SCPI' %}
+                                <span class="badge bg-primary">SCPI</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Club-Deal</span>
+                            {% endif %}
+                        </p>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#investModal{{ operation.id }}">
+                                Investir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Modal associée à chaque opération #}
+            <div class="modal fade" id="investModal{{ operation.id }}" tabindex="-1" aria-labelledby="investModalLabel{{ operation.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form method="post" action="{{ path('investment_create') }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="investModalLabel{{ operation.id }}">Investir dans {{ operation.nom }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="operation_id" value="{{ operation.id }}">
+                                <div class="mb-3">
+                                    <label for="amount{{ operation.id }}" class="form-label">Montant (€)</label>
+                                    <input type="number" min="1" name="montant" class="form-control" id="amount{{ operation.id }}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Confirmer</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
