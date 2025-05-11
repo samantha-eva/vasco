@@ -21,7 +21,7 @@ class InvestmentController extends AbstractController
         $operation = $em->getRepository(Operation::class)->find($operationId);
         $user = $this->getUser();
 
-        $now = new \DateTime(); // mutable
+        $now = new \DateTime();
 
         $investment = new Investment();
         $investment->setUser($user);
